@@ -1,0 +1,60 @@
+---
+import { site, packages, goals, integrations } from '../data/site';
+const field = 'w-full min-h-12 rounded-xl border border-line-2 bg-ink px-4 py-3 text-base text-paper placeholder:text-subtle outline-none transition-colors focus:border-accent';
+---
+<section id="kontakt" class="bg-ink-2 py-20 md:py-24">
+  <div class="container-x flex flex-wrap gap-12">
+    <div class="reveal flex min-w-0 flex-[1_1_320px] flex-col gap-5">
+      <p class="eyebrow">Kontakt</p>
+      <h2 class="split-reveal h-display text-5xl md:text-[56px]">Piši mi</h2>
+      <p class="text-[17px] leading-relaxed text-muted">Imaš pitanje ili želiš da se prijaviš za paket? Popuni formu i odgovoriću ti na email ili telefon.</p>
+      <ul class="mt-2 flex flex-col gap-3 text-[15px]">
+        <li><a href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener" class="text-accent hover:text-accent-hover">WhatsApp</a></li>
+        <li><a href={`mailto:${site.email}`} class="text-paper hover:text-accent">{site.email}</a></li>
+        <li class="text-muted">{site.gymAddress}</li>
+      </ul>
+    </div>
+
+    <form data-web3-form data-key={integrations.web3formsKey} novalidate={false}
+      class="reveal grid min-w-0 flex-[2_1_480px] grid-cols-1 gap-4 sm:grid-cols-2" style="--d:.1s">
+      <input type="hidden" name="subject" value={`Nova poruka sa sajta – ${site.brand} ${site.brandAccent}`} />
+      <input type="hidden" name="from_name" value={`${site.brand} ${site.brandAccent} sajt`} />
+      <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
+
+      <div class="flex flex-col gap-2">
+        <label for="contact-ime" class="text-sm font-semibold">Ime i prezime</label>
+        <input id="contact-ime" name="ime" type="text" required autocomplete="name" class={field} />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="contact-email" class="text-sm font-semibold">Email</label>
+        <input id="contact-email" name="email" type="email" required autocomplete="email" class={field} />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="contact-telefon" class="text-sm font-semibold">Telefon <span class="font-normal text-subtle">(nije obavezno)</span></label>
+        <input id="contact-telefon" name="telefon" type="tel" autocomplete="tel" class={field} />
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="contact-paket" class="text-sm font-semibold">Paket</label>
+        <select id="contact-paket" name="paket" class={field}>
+          <option value="">Još ne znam</option>
+          {packages.map((p) => <option value={p.id}>{p.name}</option>)}
+        </select>
+      </div>
+      <div class="flex flex-col gap-2 sm:col-span-2">
+        <label for="contact-cilj" class="text-sm font-semibold">Cilj</label>
+        <select id="contact-cilj" name="cilj" class={field}>
+          <option value="">Izaberi…</option>
+          {goals.map((g) => <option value={g.title}>{g.title}</option>)}
+        </select>
+      </div>
+      <div class="flex flex-col gap-2 sm:col-span-2">
+        <label for="contact-poruka" class="text-sm font-semibold">Poruka</label>
+        <textarea id="contact-poruka" name="poruka" rows="4" required class={`${field} resize-y`}></textarea>
+      </div>
+      <div class="flex flex-wrap items-center gap-4 sm:col-span-2">
+        <button type="submit" class="btn-primary px-8 disabled:opacity-60">Pošalji poruku</button>
+        <p data-form-status role="status" aria-live="polite" class="text-[15px] text-muted"></p>
+      </div>
+    </form>
+  </div>
+</section>

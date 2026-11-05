@@ -1,0 +1,37 @@
+---
+import { site, integrations } from '../data/site';
+const pdf = integrations.leadMagnetPdf;
+const success = pdf
+  ? 'Hvala! Program možeš odmah da preuzmeš ispod.'
+  : 'Hvala! Program stiže na tvoj email uskoro.';
+---
+<section id="besplatno" class="container-x py-20 md:py-24">
+  <div class="reveal flex flex-wrap items-center justify-between gap-8 rounded-[28px] bg-accent px-8 py-12 text-ink md:px-12 md:py-14">
+    <div class="flex min-w-0 flex-[1_1_420px] flex-col gap-3">
+      <h2 class="split-reveal h-display text-[clamp(36px,5vw,52px)]">Besplatan 7-dnevni program</h2>
+      <p class="text-[17px] leading-relaxed">Ostavi email i dobijaš program za prvu sedmicu. Bez obaveza.</p>
+    </div>
+    <div class="flex min-w-0 flex-[1_1_360px] flex-col gap-3">
+      <form id="lead-form" data-web3-form data-key={integrations.web3formsKey} data-success-text={success}
+        class="flex flex-wrap gap-2.5">
+        <input type="hidden" name="subject" value={`Nova prijava za besplatni program – ${site.brand} ${site.brandAccent}`} />
+        <input type="hidden" name="from_name" value={`${site.brand} ${site.brandAccent} sajt`} />
+        <input type="hidden" name="izvor" value="Besplatni 7-dnevni program" />
+        <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
+        <label for="lead-email" class="sr-only">Email adresa</label>
+        <input id="lead-email" name="email" type="email" required autocomplete="email" placeholder="tvoj@email.com"
+          class="min-h-13 min-w-0 flex-[1_1_220px] rounded-full bg-white px-5 text-base text-ink outline-none focus-visible:ring-2 focus-visible:ring-ink" />
+        <button type="submit" class="btn min-h-13 bg-ink text-paper hover:bg-black disabled:opacity-60">Pošalji mi</button>
+        <p data-form-status role="status" aria-live="polite" class="w-full text-[15px] font-semibold"></p>
+      </form>
+      {pdf && (
+        <a id="lead-download" href={pdf} download class="btn hidden self-start bg-ink text-paper hover:bg-black">Preuzmi program (PDF)</a>
+      )}
+    </div>
+  </div>
+</section>
+<script>
+  const form = document.getElementById('lead-form');
+  const dl = document.getElementById('lead-download');
+  form?.addEventListener('web3:success', () => dl?.classList.remove('hidden'));
+</script>

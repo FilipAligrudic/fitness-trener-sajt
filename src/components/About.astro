@@ -1,0 +1,16 @@
+---
+import { about, site } from '../data/site';
+---
+<section id="o-meni" class="bg-ink-2 py-20 md:py-24">
+  <div class="container-x flex flex-wrap items-center gap-12">
+    <div class="reveal placeholder-img h-[440px] min-w-0 flex-[1_1_340px] rounded-3xl">[PORTRET TRENERA]</div>
+    <div class="reveal flex min-w-0 flex-[1_1_460px] flex-col gap-5" style="--d:.1s">
+      <p class="eyebrow">O meni</p>
+      <h2 class="split-reveal h-display text-5xl md:text-[56px]">Ja sam {site.trainerName}</h2>
+      <p class="text-[17px] leading-relaxed text-muted">{about.story}</p>
+      <ul class="flex flex-col gap-2 text-muted">
+        {about.credentials.map((c) => <li class="flex gap-3"><span class="text-accent">—</span>{c}</li>)}
+      </ul>
+    </div>
+  </div>
+</section>

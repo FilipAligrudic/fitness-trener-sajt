@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+import { site } from '../data/site';
+interface Props { title?: string; description?: string }
+const { title = site.title, description = site.description } = Astro.props;
+---
+<!doctype html>
+<html lang="sr-ME">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#0E0F0C" />
+  </head>
+  <body>
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-ink">Preskoči na sadržaj</a>
+    <slot />
+    <script>
+      // Naslovi: podijeli tekst na riječi (čitači ekrana i dalje čitaju cijeli naslov)
+      document.querySelectorAll<HTMLElement>('.split-reveal').forEach((el) => {
+        const text = el.textContent?.trim() ?? '';
+        el.setAttribute('aria-label', text);
+        el.innerHTML = text.split(/\s+/).map((w, i) =>
+          `<span class="hero-word" aria-hidden="true"><span style="--i:${i}">${w}</span></span>`).join(' ');
+      });
+      // Pojavljivanje sekcija i naslova pri skrolovanju
+      const els = document.querySelectorAll('.reveal, .split-reveal');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
+          }
+        }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+        els.forEach((el) => io.observe(el));
+      } else {
+        els.forEach((el) => el.classList.add('in-view'));
+      }
+    </script>
+    <script>import '../scripts/forms';</script>
+  </body>
+</html>

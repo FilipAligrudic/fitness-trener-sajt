@@ -1,0 +1,118 @@
+---
+import { integrations, site } from '../data/site';
+const { calUsername, calEvents } = integrations;
+const configured = calUsername.trim() !== '';
+---
+<section id="zakazi" class="py-20 md:py-24">
+  <div class="container-x flex flex-col gap-10">
+    <div class="reveal flex flex-wrap items-end justify-between gap-6">
+      <div class="flex max-w-xl flex-col gap-3">
+        <p class="eyebrow">Zakazivanje</p>
+        <h2 class="split-reveal h-display text-5xl md:text-[56px]">Izaberi termin</h2>
+        <p class="text-[17px] leading-relaxed text-muted">Prve konsultacije su besplatne: upoznamo se, pričamo o cilju i vidimo koji paket ti odgovara.</p>
+      </div>
+      {configured && calEvents.length > 1 && (
+        <div role="tablist" aria-label="Tip termina" class="flex flex-wrap gap-1.5 rounded-full bg-ink-2 p-1.5">
+          {calEvents.map((e, i) => (
+            <button type="button" role="tab" id={`tab-${e.slug}`} aria-controls={`cal-${e.slug}`} aria-selected={i === 0 ? 'true' : 'false'}
+              data-slug={e.slug}
+              class="cal-tab min-h-11 rounded-full px-5 text-[15px] font-semibold transition-colors">
+              {e.label} <span class="font-normal opacity-70">· {e.duration}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {configured ? (
+      <div class="reveal overflow-hidden rounded-3xl border border-line bg-ink-2">
+        {calEvents.map((e, i) => (
+          <div id={`cal-${e.slug}`} role="tabpanel" aria-labelledby={`tab-${e.slug}`}
+            data-cal-link={`${calUsername}/${e.slug}`}
+            class:list={['cal-panel min-h-[640px]', i !== 0 && 'hidden']}>
+            <div class="cal-loading flex min-h-[640px] items-center justify-center text-subtle">Učitavam kalendar…</div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="reveal flex flex-col items-start gap-5 rounded-3xl border border-line bg-ink-2 p-8 md:p-10">
+        {import.meta.env.DEV && (
+          <p class="rounded-xl border border-dashed border-accent/60 p-4 text-sm text-accent">
+            Razvojna napomena (ne vidi se na objavljenom sajtu): upiši Cal.com korisničko ime u <code>src/data/site.ts → integrations.calUsername</code> da se ovdje prikaže kalendar.
+          </p>
+        )}
+        <h3 class="text-2xl font-bold">Javi se direktno i dogovorićemo termin</h3>
+        <p class="max-w-xl text-muted">Odgovaram obično u toku dana.</p>
+        <div class="flex flex-wrap gap-3">
+          <a href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener" class="btn-primary">Piši na WhatsApp</a>
+          <a href="#kontakt" class="btn-ghost">Pošalji poruku</a>
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+
+{configured && (
+  <script>
+    // Cal.com se učitava tek kad se sekcija približi ekranu (brže učitavanje sajta)
+    const section = document.getElementById('zakazi')!;
+    const panels = [...section.querySelectorAll<HTMLElement>('.cal-panel')];
+    const tabs = [...section.querySelectorAll<HTMLButtonElement>('.cal-tab')];
+    const loaded = new Set<string>();
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim() || '#D4F54A';
+
+    function loadCalScript() {
+      const w = window as any;
+      if (w.Cal) return;
+      // Zvanični Cal.com embed loader
+      (function (C: any, A: string, L: string) {
+        const p = (a: any, ar: any) => a.q.push(ar);
+        const d = C.document;
+        C.Cal = C.Cal || function () {
+          const cal = C.Cal; const ar = arguments;
+          if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement('script')).src = A; cal.loaded = true; }
+          if (ar[0] === L) {
+            const api: any = function () { p(api, arguments); };
+            const namespace = ar[1]; api.q = api.q || [];
+            if (typeof namespace === 'string') { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ['initNamespace', namespace]); }
+            else p(cal, ar);
+            return;
+          }
+          p(cal, ar);
+        };
+      })(window, 'https://app.cal.com/embed/embed.js', 'init');
+      w.Cal('init', { origin: 'https://cal.com' });
+      w.Cal('ui', { theme: 'dark', cssVarsPerTheme: { dark: { 'cal-brand': accent } }, layout: 'month_view', hideEventTypeDetails: false });
+    }
+
+    function mount(panel: HTMLElement) {
+      const link = panel.dataset.calLink!;
+      if (loaded.has(link)) return;
+      loaded.add(link);
+      loadCalScript();
+      panel.querySelector('.cal-loading')?.remove();
+      (window as any).Cal('inline', { elementOrSelector: `#${panel.id}`, calLink: link, layout: 'month_view' });
+    }
+
+    let visible = false;
+    let current = panels[0];
+    function select(slug: string) {
+      tabs.forEach((t) => {
+        const on = t.dataset.slug === slug;
+        t.setAttribute('aria-selected', String(on));
+        t.classList.toggle('bg-accent', on); t.classList.toggle('text-ink', on); t.classList.toggle('text-muted', !on);
+      });
+      panels.forEach((p) => {
+        const on = p.id === `cal-${slug}`;
+        p.classList.toggle('hidden', !on);
+        if (on) current = p;
+      });
+      if (visible) mount(current);
+    }
+    tabs.forEach((t) => t.addEventListener('click', () => select(t.dataset.slug!)));
+    if (tabs[0]) select(tabs[0].dataset.slug!);
+    new IntersectionObserver(([e], io) => {
+      if (e.isIntersecting) { visible = true; mount(current); io.disconnect(); }
+    }, { rootMargin: '400px' }).observe(section);
+  </script>
+)}

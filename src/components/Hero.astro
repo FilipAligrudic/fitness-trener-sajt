@@ -1,0 +1,75 @@
+---
+import { stats, goals } from '../data/site';
+import ParticlesBg from './ParticlesBg.astro';
+const headline = 'Treniraj uživo u Podgorici ili online, gdje god da si';
+const words = headline.split(' ');
+const ticker = [...goals.map((g) => g.title), 'Uživo', 'Online', 'Hibrid'];
+---
+<section id="top" class="relative overflow-hidden">
+  <ParticlesBg />
+
+  <div class="container-x relative flex flex-wrap items-center gap-12 pb-16 pt-12 md:pb-24 md:pt-20">
+    <div class="flex min-w-0 flex-[1_1_460px] flex-col gap-6">
+      <p class="eyebrow anim-fade-up flex items-center gap-3" style="--d:0s">
+        <span class="anim-pulse inline-block size-2.5 rounded-full bg-accent"></span>
+        Personalni trener · Podgorica &amp; online
+      </p>
+      <h1 class="h-display text-[clamp(52px,8vw,92px)] leading-[0.95]" aria-label={headline}>
+        {words.map((w, i) => (
+          <>
+            <span class="hero-word" aria-hidden="true"><span style={`--i:${i}`} class={w === 'online,' || w === 'Podgorici' ? 'text-accent' : ''}>{w}</span></span>{' '}
+          </>
+        ))}
+      </h1>
+      <p class="anim-fade-up max-w-[520px] text-lg leading-relaxed text-muted md:text-[19px]" style="--d:.75s">
+        Plan treninga i ishrane napravljen za tvoj cilj, tvoje vrijeme i tvoje tijelo. Bez generičkih programa.
+      </p>
+      <div class="anim-fade-up flex flex-wrap gap-3" style="--d:.9s">
+        <a href="#paketi" class="btn-primary group gap-2 px-7 py-4">
+          Pogledaj pakete
+          <svg aria-hidden="true" class="transition-transform group-hover:translate-x-1" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg>
+        </a>
+        <a href="#besplatno" class="btn-ghost px-7 py-4">Besplatan 7-dnevni program</a>
+      </div>
+      <dl class="anim-fade-up flex flex-wrap gap-8 pt-3" style="--d:1.05s">
+        {stats.map((s) => (
+          <div>
+            <dt class="sr-only">{s.label}</dt>
+            <dd class="font-display text-4xl">{s.value}</dd>
+            <dd class="text-sm text-subtle">{s.label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+
+    <div class="relative min-w-0 flex-[1_1_380px]">
+      <div class="anim-reveal placeholder-img h-[440px] rounded-3xl md:h-[560px]" style="--d:.3s">
+        [FOTOGRAFIJA TRENERA – akcija u teretani, vertikalna]
+      </div>
+      <!-- plutajuće "značke" preko fotografije -->
+      <div class="anim-fade-up absolute -left-3 bottom-10 md:-left-8" style="--d:1.2s">
+        <div class="anim-float rounded-2xl border border-line-2 bg-ink/90 px-5 py-4 backdrop-blur">
+          <div class="text-xs uppercase tracking-widest text-subtle">Sljedeći trening</div>
+          <div class="mt-1 font-semibold">Uživo · Podgorica</div>
+        </div>
+      </div>
+      <div class="anim-fade-up absolute -right-2 top-10 md:-right-6" style="--d:1.35s">
+        <div class="anim-float rounded-2xl bg-accent px-5 py-4 text-ink" style="animation-delay:-2.5s">
+          <div class="text-xs font-semibold uppercase tracking-widest">Online</div>
+          <div class="mt-1 font-bold">Plan + check-in</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- pokretna traka -->
+  <div aria-hidden="true" class="anim-fade-up overflow-hidden border-y border-line bg-ink-2 py-4" style="--d:1.4s">
+    <div class="marquee-track flex w-max gap-10">
+      {[...ticker, ...ticker, ...ticker, ...ticker].map((t) => (
+        <span class="flex items-center gap-10 font-display text-3xl uppercase text-paper/90">
+          {t}<span class="text-accent">✦</span>
+        </span>
+      ))}
+    </div>
+  </div>
+</section>

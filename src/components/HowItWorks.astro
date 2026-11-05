@@ -1,0 +1,15 @@
+---
+import { steps } from '../data/site';
+---
+<section class="container-x flex flex-col gap-10 py-20 md:py-24">
+  <h2 class="split-reveal h-display text-5xl md:text-[56px]">Kako funkcioniše</h2>
+  <ol class="grid gap-8 md:grid-cols-3">
+    {steps.map((s, i) => (
+      <li class="reveal flex flex-col gap-3 border-t-2 border-accent pt-5" style={`--d:${i * 0.12}s`}>
+        <span class="font-display text-[44px] text-accent">{String(i + 1).padStart(2, '0')}</span>
+        <h3 class="text-[22px] font-bold">{s.title}</h3>
+        <p class="leading-relaxed text-muted">{s.text}</p>
+      </li>
+    ))}
+  </ol>
+</section>

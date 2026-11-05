@@ -1,0 +1,95 @@
+---
+// Suptilne tačkice u pozadini hero sekcije.
+// Podešavanja su u objektu CONFIG u skripti ispod.
+---
+<canvas id="particles" aria-hidden="true"
+  class="pointer-events-none absolute inset-0 h-full w-full"
+  style="mask-image: radial-gradient(ellipse at 65% 45%, #000 30%, transparent 80%);"></canvas>
+
+<script>
+  const CONFIG = {
+    density: 15000,      // manji broj = više tačaka (px² po tački)
+    maxDots: 90,
+    speed: 0.18,         // brzina kretanja
+    linkDistance: 130,   // na kojoj udaljenosti se tačke povezuju linijom
+    mouseRadius: 160,    // koliko daleko miš "gura" tačke
+    color: '212, 245, 74', // akcentna boja (R, G, B)
+  };
+
+  const canvas = document.getElementById('particles') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  type Dot = { x: number; y: number; vx: number; vy: number; r: number };
+  let dots: Dot[] = [];
+  let w = 0, h = 0, raf = 0, running = false;
+  const mouse = { x: -9999, y: -9999 };
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    w = rect.width; h = rect.height;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const count = Math.min(CONFIG.maxDots, Math.floor((w * h) / CONFIG.density) * (w < 768 ? 0.5 : 1));
+    dots = Array.from({ length: count }, () => ({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random() - 0.5) * CONFIG.speed * 2,
+      vy: (Math.random() - 0.5) * CONFIG.speed * 2,
+      r: Math.random() * 1.4 + 0.6,
+    }));
+    if (!running) draw();
+  }
+
+  function step() {
+    for (const d of dots) {
+      const dx = d.x - mouse.x, dy = d.y - mouse.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < CONFIG.mouseRadius && dist > 0) {
+        const f = (1 - dist / CONFIG.mouseRadius) * 0.6;
+        d.x += (dx / dist) * f; d.y += (dy / dist) * f;
+      }
+      d.x += d.vx; d.y += d.vy;
+      if (d.x < -10) d.x = w + 10; else if (d.x > w + 10) d.x = -10;
+      if (d.y < -10) d.y = h + 10; else if (d.y > h + 10) d.y = -10;
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    const L = CONFIG.linkDistance;
+    for (let i = 0; i < dots.length; i++) {
+      const a = dots[i];
+      for (let j = i + 1; j < dots.length; j++) {
+        const b = dots[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < L * L) {
+          ctx.strokeStyle = `rgba(${CONFIG.color}, ${0.14 * (1 - Math.sqrt(d2) / L)})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        }
+      }
+    }
+    for (const d of dots) {
+      ctx.fillStyle = `rgba(${CONFIG.color}, 0.55)`;
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function loop() { step(); draw(); raf = requestAnimationFrame(loop); }
+  function start() { if (!running && !reduced) { running = true; loop(); } }
+  function stop() { running = false; cancelAnimationFrame(raf); }
+
+  resize();
+  window.addEventListener('resize', resize);
+  const hero = canvas.parentElement!;
+  hero.addEventListener('pointermove', (e) => {
+    const r = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+  });
+  hero.addEventListener('pointerleave', () => { mouse.x = mouse.y = -9999; });
+
+  // Animacija radi samo dok je hero vidljiv (štedi bateriju)
+  new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop())).observe(canvas);
+  document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+</script>

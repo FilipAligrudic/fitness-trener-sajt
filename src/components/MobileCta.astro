@@ -1,0 +1,10 @@
+---
+import { site } from '../data/site';
+---
+<div class="fixed inset-x-0 bottom-0 z-30 flex gap-2.5 border-t border-line bg-ink/95 px-5 pb-5 pt-3 backdrop-blur md:hidden">
+  <a href="#zakazi" class="btn-primary flex-1 text-[15px]">Zakaži konsultacije</a>
+  <a href={`https://wa.me/${site.whatsapp}`} aria-label="Piši na WhatsApp" target="_blank" rel="noopener"
+    class="flex size-12 items-center justify-center rounded-full border-[1.5px] border-line-2">
+    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 17l1.2-3.6A7 7 0 1 1 7 16.2L3 17z"/></svg>
+  </a>
+</div>

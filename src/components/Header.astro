@@ -1,0 +1,52 @@
+---
+import { site } from '../data/site';
+const links = [
+  { href: '#programi', label: 'Programi' },
+  { href: '#paketi', label: 'Paketi' },
+  { href: '#rezultati', label: 'Rezultati' },
+  { href: '#o-meni', label: 'O meni' },
+  { href: '#zakazi', label: 'Zakaži' },
+  { href: '#kontakt', label: 'Kontakt' },
+];
+---
+<header id="site-header" class="sticky top-0 z-40 border-b border-transparent transition-colors duration-300">
+  <div class="container-x flex items-center justify-between gap-4 py-4">
+    <a href="#top" class="font-display text-[26px] tracking-wide text-paper no-underline">
+      {site.brand} <span class="text-accent">{site.brandAccent}</span>
+    </a>
+    <nav aria-label="Glavni meni" class="hidden gap-7 text-[15px] font-medium md:flex">
+      {links.map((l) => <a href={l.href} class="text-muted transition-colors hover:text-accent">{l.label}</a>)}
+    </nav>
+    <a href="#zakazi" class="btn-primary hidden text-[15px] md:inline-flex">Besplatne konsultacije</a>
+    <button id="menu-btn" type="button" aria-label="Otvori meni" aria-expanded="false" aria-controls="mobile-menu"
+      class="flex size-11 items-center justify-center rounded-xl border border-line-2 md:hidden">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h14M3 10h14M3 14h14"/></svg>
+    </button>
+  </div>
+  <nav id="mobile-menu" aria-label="Mobilni meni" class="hidden border-t border-line bg-ink md:hidden">
+    <div class="container-x flex flex-col py-4">
+      {links.map((l) => <a href={l.href} class="border-b border-line py-3 text-lg text-paper">{l.label}</a>)}
+      <a href="#zakazi" class="btn-primary mt-4">Besplatne konsultacije</a>
+    </div>
+  </nav>
+</header>
+<script>
+  const header = document.getElementById('site-header')!;
+  const btn = document.getElementById('menu-btn')!;
+  const menu = document.getElementById('mobile-menu')!;
+  const onScroll = () => {
+    const s = window.scrollY > 20;
+    header.classList.toggle('bg-ink/85', s);
+    header.classList.toggle('backdrop-blur-md', s);
+    header.classList.toggle('border-line', s);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  btn.addEventListener('click', () => {
+    const open = menu.classList.toggle('hidden') === false;
+    btn.setAttribute('aria-expanded', String(open));
+  });
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => {
+    menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false');
+  }));
+</script>

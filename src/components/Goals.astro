@@ -1,0 +1,48 @@
+---
+import { goals } from '../data/site';
+---
+<section id="programi" class="bg-ink-2 py-20 md:py-24" data-gender="zene">
+  <div class="container-x flex flex-col gap-9">
+    <div class="reveal flex flex-wrap items-end justify-between gap-5">
+      <div class="flex flex-col gap-3">
+        <p class="eyebrow">Programi</p>
+        <h2 class="split-reveal h-display text-5xl md:text-[56px]">Koji je tvoj cilj?</h2>
+      </div>
+      <div role="radiogroup" aria-label="Prikaži programe za" class="flex gap-1.5 rounded-full bg-ink p-1.5">
+        <button type="button" role="radio" aria-checked="true" data-g="zene" class="gender-btn min-h-11 rounded-full px-6 text-[15px] font-semibold transition-colors">Žene</button>
+        <button type="button" role="radio" aria-checked="false" data-g="muskarci" class="gender-btn min-h-11 rounded-full px-6 text-[15px] font-semibold transition-colors">Muškarci</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {goals.map((g, i) => (
+        <a href="#paketi" class="reveal lift flex flex-col overflow-hidden rounded-2xl border border-line bg-ink text-paper" style={`--d:${i * 0.08}s`}>
+          {g.image
+            ? <img src={g.image} alt="" class="h-48 w-full object-cover" loading="lazy" />
+            : <div class="placeholder-img h-48 border-0 border-b">[FOTO]</div>}
+          <div class="flex flex-col gap-2.5 p-6">
+            <h3 class="h-display text-3xl">{g.title}</h3>
+            <p class="goal-text text-[15px] leading-relaxed text-muted" data-for="zene">{g.text.zene}</p>
+            <p class="goal-text hidden text-[15px] leading-relaxed text-muted" data-for="muskarci">{g.text.muskarci}</p>
+            <span class="pt-1 text-[15px] font-semibold text-accent">Saznaj više →</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+<script>
+  const section = document.getElementById('programi')!;
+  const btns = section.querySelectorAll<HTMLButtonElement>('.gender-btn');
+  const setGender = (g: string) => {
+    btns.forEach((b) => {
+      const on = b.dataset.g === g;
+      b.setAttribute('aria-checked', String(on));
+      b.classList.toggle('bg-accent', on);
+      b.classList.toggle('text-ink', on);
+      b.classList.toggle('text-muted', !on);
+    });
+    section.querySelectorAll<HTMLElement>('.goal-text').forEach((p) => p.classList.toggle('hidden', p.dataset.for !== g));
+  };
+  btns.forEach((b) => b.addEventListener('click', () => setGender(b.dataset.g!)));
+  setGender('zene');
+</script>
